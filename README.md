@@ -1,99 +1,186 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+Proyecto Final – Backend con NestJS
+Descripción General
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Este proyecto corresponde al desarrollo del backend del sistema EduTrack, realizado como parte del curso de Desarrollo Backend con NestJS.
+El objetivo principal es implementar una API RESTful que gestione la información de usuarios, aplicando buenas prácticas de arquitectura, encriptación de contraseñas y validaciones.
+La aplicación está desarrollada con el framework NestJS, utilizando TypeORM para la comunicación con la base de datos PostgreSQL.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+En esta primera fase se implementa el módulo de usuarios, con todas sus operaciones CRUD (crear, leer, actualizar y eliminar). Además, las contraseñas se almacenan de forma segura usando la librería bcrypt.
+Posteriormente se integrarán las demás entidades definidas en el proyecto (Profesor, Estudiante, Curso e Inscripción).
 
-## Description
+Requisitos Previos
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Antes de ejecutar el proyecto, es necesario tener instalado lo siguiente:
 
-## Project setup
+Node.js (versión recomendada: 18 o superior)
 
-```bash
-$ npm install
-```
+npm (incluido con Node.js)
 
-## Compile and run the project
+PostgreSQL (versión 14 o superior)
 
-```bash
-# development
-$ npm run start
+pgAdmin4 (opcional, para gestionar la base de datos gráficamente)
 
-# watch mode
-$ npm run start:dev
+Instalación del Proyecto
 
-# production mode
-$ npm run start:prod
-```
+Clonar el repositorio o descargar el proyecto.
 
-## Run tests
+git clone <URL-del-repositorio>
+cd Proyecto-Final-NestJS
 
-```bash
-# unit tests
-$ npm run test
 
-# e2e tests
-$ npm run test:e2e
+Instalar las dependencias.
 
-# test coverage
-$ npm run test:cov
-```
+npm install
 
-## Deployment
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Configurar las variables de entorno.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+En el archivo .env.template.
+Cópialo y renómbralo como .env, y actualiza los valores según tu configuración local:
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=tu_contraseña
+DB_NAME=edutrack
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+NOTA:SI hay variables de entorno con estos valores cambiarlos y reiniciar la computadora para que agarre los valores si no generara error....
 
-## Resources
+Verificar la conexión con PostgreSQL.
+Crea manualmente la base de datos en pgAdmin4 con el mismo nombre definido en DB_NAME.
 
-Check out a few resources that may come in handy when working with NestJS:
+Ejecución del Proyecto
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Para ejecutar el proyecto en modo desarrollo, utiliza el siguiente comando:
 
-## Support
+npm run start:dev
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
-## Stay in touch
+Si todo está correctamente configurado, en la consola aparecerá el mensaje:
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+[Nest] ...  - Nest application successfully started
 
-## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-# Proyecto-Final-NesJS
+La aplicación se ejecutará por defecto en:
+
+http://localhost:3000
+
+
+Endpoints Disponibles
+
+Base URL: http://localhost:3000/usuarios
+
+Método	Endpoint	Descripción
+POST	/usuarios	Crear un nuevo usuario
+GET	/usuarios	Listar todos los usuarios
+GET	/usuarios/:id	Obtener un usuario por su ID
+PATCH	/usuarios/:id	Actualizar un usuario existente
+DELETE	/usuarios/:id	Eliminar un usuario por su ID
+Pruebas en Postman
+
+Para verificar el funcionamiento de la API, se recomienda usar Postman .
+
+1. Crear un Usuario (POST)
+
+URL: http://localhost:3000/usuarios
+
+Body (JSON):
+
+{
+  "nombre_completo": "Ian Beltrán",
+  "correo": "ianbeltran@example.com",
+  "contraseña": "12345Ian.",
+  "rol": "profesor"
+}
+
+
+Respuesta esperada:
+
+{
+  "id": 1,
+  "nombre_completo": "Ian Beltrán",
+  "correo": "ianbeltran@example.com",
+  "rol": "profesor"
+}
+
+
+Nota: la contraseña se guarda en la base de datos de forma encriptada mediante bcrypt.}
+
+
+2. Obtener Todos los Usuarios (GET)
+
+URL: http://localhost:3000/usuarios
+
+Respuesta esperada:
+
+[
+  {
+    "id": 1,
+    "nombre_completo": "Ian Beltrán",
+    "correo": "ianbeltran@example.com",
+    "rol": "profesor"
+  }
+]
+
+3. Actualizar un Usuario (PATCH)
+
+URL: http://localhost:3000/usuarios/1
+
+Body (JSON):
+
+{
+  "nombre_completo": "Ian Alfonso Beltrán",
+  "correo": "ianbeltran@example.com",
+  "contraseña": "nuevaClave123",
+  "rol": "profesor"
+}
+
+
+Validación especial:
+Si el correo ya existe, el servidor mostrará en consola:
+
+Error: El correo ianbeltran@example.com ya está en uso
+
+
+Y Postman devolverá una respuesta:
+
+{
+  "statusCode": 400,
+  "message": "El correo ianbeltran@example.com ya está en uso"
+}
+
+4. Eliminar un Usuario (DELETE)
+
+URL: http://localhost:3000/usuarios/1
+
+Respuesta esperada:
+
+{
+  "mensaje": "Usuario con ID 1 eliminado correctamente"
+}
+
+Tecnologías Utilizadas
+
+NestJS – Framework backend basado en Node.js y TypeScript
+
+TypeORM – ORM para modelar y conectar con PostgreSQL
+
+PostgreSQL – Base de datos relacional
+
+bcrypt – Encriptación segura de contraseñas
+
+class-validator / class-transformer – Validación de datos en los DTOs
+
+Próximas Fases
+
+En las siguientes etapas del proyecto se integrarán los siguientes módulos adicionales:
+
+Profesor (especialización de usuario con campo especialidad)
+
+Estudiante (especialización con campo año_ingreso)
+
+Curso (asignado a un profesor)
+
+Inscripción (relación entre estudiantes y cursos)
+
+Estas entidades estarán relacionadas mediante decoradores de TypeORM, cumpliendo con las relaciones 1:1 y 1:N definidas en el enunciado del proyecto.
