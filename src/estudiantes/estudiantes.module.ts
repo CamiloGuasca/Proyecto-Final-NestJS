@@ -5,6 +5,7 @@ import { Inscripcion } from 'src/inscripciones/entities/inscripcion.entity';
 import { Usuario } from 'src/usuarios/entities/usuario.entity';
 import { EstudiantesService } from './estudiantes.service';
 import { Estudiante } from './entities/estudiante.entity';
+import { EstudiantesController } from './estudiantes.controller';
 
 @Module({
     imports: [
@@ -12,5 +13,6 @@ import { Estudiante } from './entities/estudiante.entity';
     ],
     providers: [EstudiantesService],
     exports: [EstudiantesService],
+    controllers: [EstudiantesController],
 })
 export class EstudiantesModule {}
