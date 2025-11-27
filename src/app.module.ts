@@ -2,6 +2,10 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { ConfigModule } from '@nestjs/config';
+import { ProfesoresModule } from './profesores/profesores.module';
+import { EstudiantesModule } from './estudiantes/estudiantes.module';
+import { CursosModule } from './cursos/cursos.module';
+import { InscripcionesModule } from './inscripciones/inscripciones.module';
 
 @Module({
   imports: [
@@ -17,6 +21,10 @@ import { ConfigModule } from '@nestjs/config';
       synchronize: true, 
     }),
     UsuariosModule,
+    ProfesoresModule,
+    EstudiantesModule,
+    CursosModule,
+    InscripcionesModule,
   ],
 })
 export class AppModule {}
