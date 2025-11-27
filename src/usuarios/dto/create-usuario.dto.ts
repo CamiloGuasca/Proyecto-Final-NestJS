@@ -1,15 +1,17 @@
-import { IsEmail, IsEnum, IsNotEmpty, MinLength, ValidateIf, IsString, IsInt, Min  } from 'class-validator';
+// src/usuarios/dto/create-usuario.dto.ts
+import { IsEmail, IsEnum, IsNotEmpty, MinLength, ValidateIf, IsString, IsInt, Min } from 'class-validator';
 import { RolUsuario } from '../enums/rol-usuario.enum';
 
 export class CreateUsuarioDto {
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'El nombre completo es obligatorio.' })
   nombre_completo: string;
 
-  @IsEmail()
+  @IsEmail({}, { message: 'El formato del correo es inválido.' })
   correo: string;
 
-  @MinLength(6)
-  contrasena: string;
+  @IsNotEmpty({ message: 'La contraseña es obligatoria.' })
+  @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres.' })
+  contraseña: string; 
 
   @IsEnum(['profesor', 'estudiante'], {
     message: 'El rol debe ser profesor o estudiante',
