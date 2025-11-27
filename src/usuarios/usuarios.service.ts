@@ -11,6 +11,9 @@ import { Usuario } from './entities/usuario.entity';
 import { Profesor } from 'src/profesores/entities/profesor.entity';
 import { Estudiante } from 'src/estudiantes/entities/estudiante.entity';
 
+import { ProfesoresService } from 'src/profesores/profesores.service';
+import { EstudiantesService } from 'src/estudiantes/estudiantes.service';
+
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -18,10 +21,8 @@ export class UsuariosService {
   constructor(
     @InjectRepository(Usuario)
     private readonly usuarioRepository: Repository<Usuario>,
-    @InjectRepository(Profesor)
-    private readonly profesorRepository: Repository<Profesor>,
-    @InjectRepository(Estudiante)
-    private readonly estudianteRepository: Repository<Estudiante>,
+    private readonly profesoresService: ProfesoresService, 
+    private readonly estudiantesService: EstudiantesService,
   ) {}
 
   async create(createUsuarioDto: CreateUsuarioDto): Promise<IUsuario> {
@@ -34,18 +35,16 @@ export class UsuariosService {
 
     const usuario = await this.usuarioRepository.save(nuevoUsuario);
 
-    if (rol === 'profesor') {
-      const nuevoProfesor = this.profesorRepository.create({
-        id: usuario.id,
-        especialidad: especialidad,
-      });
-      await this.profesorRepository.save(nuevoProfesor);
+if (rol === 'profesor') {
+      if (!especialidad) {
+        throw new BadRequestException('El campo "especialidad" es requerido para profesores.');
+      }
+      await this.profesoresService.crearEspecializacion(usuario.id, especialidad as string); 
     } else if (rol === 'estudiante') {
-      const nuevoEstudiante = this.estudianteRepository.create({
-        id: usuario.id,
-        ano_ingreso: ano_ingreso,
-      });
-      await this.estudianteRepository.save(nuevoEstudiante);
+      if (!ano_ingreso) {
+        throw new BadRequestException('El campo "ano_ingreso" es requerido para estudiantes.');
+      }
+      await this.estudiantesService.crearEspecializacion(usuario.id, ano_ingreso as number);
     }
 
     return usuario as IUsuario;

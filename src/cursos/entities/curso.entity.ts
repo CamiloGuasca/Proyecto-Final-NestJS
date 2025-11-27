@@ -18,7 +18,7 @@ export class Curso implements ICurso{
     creditos: number;
 
    
-    @Column()
+    @Column({name: 'profesor_id'})
     profesor_id: number; 
 
     @ManyToOne(() => Profesor, (profesor) => profesor.cursos, {

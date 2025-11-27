@@ -6,6 +6,7 @@ import { ProfesoresModule } from './profesores/profesores.module';
 import { EstudiantesModule } from './estudiantes/estudiantes.module';
 import { CursosModule } from './cursos/cursos.module';
 import { InscripcionesModule } from './inscripciones/inscripciones.module';
+import { CursosService } from './cursos/cursos.service';
 
 @Module({
   imports: [
@@ -26,5 +27,6 @@ import { InscripcionesModule } from './inscripciones/inscripciones.module';
     CursosModule,
     InscripcionesModule,
   ],
+  providers: [CursosService],
 })
 export class AppModule {}
