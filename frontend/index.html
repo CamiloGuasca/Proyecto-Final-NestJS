@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTrack - Sistema de Gestión Académica</title>
+    <style>
+        /* Estilos Base y Tipografía */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            padding: 20px; 
+            background-color: #eef2f7; /* Gris claro profesional */
+            color: #333;
+        }
+        .container { 
+            max-width: 700px; 
+            margin: 30px auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1); 
+        }
+        /* Colores Temáticos */
+        .header {
+            background-color: #3f51b5; /* Azul institucional */
+            color: white;
+            padding: 15px;
+            border-radius: 8px 8px 0 0;
+            margin: -30px -30px 20px -30px;
+            text-align: center;
+        }
+        h1 { margin: 0; font-size: 1.8em; }
+        h2 { 
+            border-bottom: 2px solid #3f51b5; 
+            padding-bottom: 5px; 
+            margin-top: 25px; 
+            color: #3f51b5;
+            font-size: 1.4em;
+        }
+
+        /* Formulario y Controles */
+        input[type="text"], input[type="password"] { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 8px 0; 
+            border: 1px solid #ddd; 
+            border-radius: 6px; 
+            box-sizing: border-box; 
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: #5c6bc0;
+            outline: none;
+        }
+
+        /* Botones */
+        button { 
+            background-color: #4CAF50; 
+            color: white; 
+            padding: 10px 15px; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            margin-right: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover { background-color: #45a049; }
+        .btn-primary { background-color: #3f51b5; }
+        .btn-primary:hover { background-color: #303f9f; }
+        .btn-danger { background-color: #f44336; }
+        .btn-danger:hover { background-color: #d32f2f; }
+        
+        /* Mensajes de Estado */
+        #message { 
+            margin-top: 15px; 
+            padding: 12px; 
+            border-radius: 6px; 
+            display: none; 
+            font-weight: bold;
+        }
+        .success { background-color: #e8f5e9; color: #388e3c; border: 1px solid #c8e6c9; }
+        .error { background-color: #ffebee; color: #d32f2f; border: 1px solid #ffcdd2; }
+
+        /* Sección Protegida */
+        #protectedSection { 
+            margin-top: 30px; 
+            padding: 20px; 
+            background-color: #f9f9f9; 
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            display: none; 
+        }
+
+        /* Token Display FIX */
+        .token-box {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #fff8e1; /* Fondo amarillo suave para destacar la seguridad */
+            border: 1px dashed #ffb300;
+            border-radius: 6px;
+        }
+        #tokenTextarea {
+            width: 100%;
+            height: 80px; /* Alto fijo, con scroll si es necesario */
+            padding: 10px;
+            box-sizing: border-box;
+            resize: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.8em;
+        }
+
+        /* Tablas */
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 15px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        th, td { 
+            border: 1px solid #e0e0e0; 
+            padding: 12px; 
+            text-align: left; 
+        }
+        th { 
+            background-color: #bbdefb; /* Azul más claro */
+            color: #333;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+        tr:nth-child(even) {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>EduTrack</h1>
+            <p>Sistema de Gestión Académica - NestJS Backend</p>
+        </div>
+        
+        <h2>Acceso al Sistema</h2>
+        <form id="loginForm">
+            <label for="correo">Correo:</label>
+            <input type="text" id="correo" name="correo" value="profesor@test.com" required>
+            
+            <label for="contraseña">Contraseña:</label>
+            <input type="password" id="contraseña" name="contraseña" value="password" required>
+            
+            <button type="submit" class="btn-primary">Iniciar Sesión</button>
+        </form>
+        
+        <div id="message"></div>
+
+        <div id="protectedSection">
+            <h2>Gestión de Datos (Ruta Protegida)</h2>
+            
+            <div class="token-box">
+                <label>Token JWT (Copie el valor completo para Postman):</label>
+                <textarea id="tokenTextarea" readonly>Inicie sesión para ver el token.</textarea>
+            </div>
+
+            <button id="fetchUsersButton" class="btn-primary">Cargar Usuarios (GET /usuarios)</button>
+            <button id="logoutButton" class="btn-danger">Cerrar Sesión</button>
+
+            <h3>Lista de Usuarios</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre Completo</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <tr><td colspan="4">Inicia sesión y haz clic en 'Cargar Usuarios'</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // La URL base de tu API de NestJS
+        const API_BASE_URL = 'http://localhost:3000'; 
+        let accessToken = localStorage.getItem('accessToken') || null;
+
+        const loginForm = document.getElementById('loginForm');
+        const messageDiv = document.getElementById('message');
+        const protectedSection = document.getElementById('protectedSection');
+        const tokenTextarea = document.getElementById('tokenTextarea');
+        const fetchUsersButton = document.getElementById('fetchUsersButton');
+        const usersTableBody = document.getElementById('usersTableBody');
+        const logoutButton = document.getElementById('logoutButton');
+
+        // Función para mostrar mensajes
+        function displayMessage(text, isSuccess) {
+            messageDiv.textContent = text;
+            messageDiv.className = isSuccess ? 'success' : 'error';
+            messageDiv.style.display = 'block';
+        }
+
+        // Función para alternar la vista de secciones
+        function updateUI() {
+            if (accessToken) {
+                loginForm.style.display = 'none';
+                protectedSection.style.display = 'block';
+                // FIX: Mostrar el token COMPLETO en el textarea
+                tokenTextarea.value = accessToken; 
+                messageDiv.style.display = 'none';
+            } else {
+                loginForm.style.display = 'block';
+                protectedSection.style.display = 'none';
+                tokenTextarea.value = 'Inicie sesión para ver el token.';
+                usersTableBody.innerHTML = '<tr><td colspan="4">Inicia sesión y haz clic en \'Cargar Usuarios\'</td></tr>';
+            }
+        }
+
+        // ----------------------------------------------------
+        // 1. INICIO DE SESIÓN (POST /auth/login)
+        // ----------------------------------------------------
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                correo: document.getElementById('correo').value,
+                contraseña: document.getElementById('contraseña').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Credenciales inválidas.');
+                }
+
+                const result = await response.json();
+                accessToken = result.access_token;
+                localStorage.setItem('accessToken', accessToken);
+                displayMessage('✅ Login exitoso. Token guardado.', true);
+                updateUI();
+            } catch (error) {
+                displayMessage('❌ Error al iniciar sesión: ' + error.message, false);
+            }
+        });
+
+        // ----------------------------------------------------
+        // 2. CARGAR USUARIOS (GET /usuarios - Ruta Protegida)
+        // ----------------------------------------------------
+        fetchUsersButton.addEventListener('click', async () => {
+            if (!accessToken) {
+                return displayMessage('⚠️ Debes iniciar sesión primero.', false);
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/usuarios`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`, // 👈 ENVÍO DEL TOKEN JWT
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response.status === 401 || response.status === 403) {
+                    displayMessage('❌ Acceso no autorizado. El token es inválido o no tienes el rol de "profesor".', false);
+                    // Borrar token si es no autorizado
+                    accessToken = null;
+                    localStorage.removeItem('accessToken');
+                    updateUI();
+                    return;
+                }
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Error desconocido al cargar usuarios.');
+                }
+
+                const users = await response.json();
+                
+                // Mapeo dinámico de los usuarios a la tabla
+                usersTableBody.innerHTML = users.map(user => `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td>${user.nombre_completo}</td>
+                        <td>${user.correo}</td>
+                        <td>${user.rol}</td>
+                    </tr>
+                `).join('');
+
+                displayMessage(`Se cargaron ${users.length} usuarios.`, true);
+
+            } catch (error) {
+                displayMessage('❌ Error al obtener datos: ' + error.message, false);
+            }
+        });
+
+        // ----------------------------------------------------
+        // 3. CERRAR SESIÓN
+        // ----------------------------------------------------
+        logoutButton.addEventListener('click', () => {
+            accessToken = null;
+            localStorage.removeItem('accessToken');
+            displayMessage('🚪 Sesión cerrada correctamente.', true);
+            updateUI();
+        });
+
+        // Inicializar la interfaz
+        updateUI();
+
+    </script>
+</body>
+</html>
