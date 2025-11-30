@@ -42,7 +42,7 @@ export class Usuario implements IUsuario {
 
 
   // 3. RELACIONES (Cardinalidad corregida a OneToMany, aunque solo se use una vez)
-  @OneToMany(() => Profesor, (profesor) => profesor.usuario)
+  @OneToMany(() => Profesor, (profesor) => profesor.usuario,{eager:true})
   profesor: Profesor;
 
   @OneToMany(() => Estudiante, (estudiante) => estudiante.usuario)

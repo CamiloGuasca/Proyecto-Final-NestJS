@@ -90,6 +90,17 @@
             border: 1px solid #e0e0e0;
             display: none; 
         }
+        /* Sección Básica para Estudiantes */
+        #basicSection {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e3f2fd; /* Azul muy claro para estudiante */
+            border-radius: 8px;
+            border: 1px solid #bbdefb;
+            display: none;
+            text-align: center;
+        }
+
 
         /* Token Display FIX */
         .token-box {
@@ -155,6 +166,13 @@
         </form>
         
         <div id="message"></div>
+        
+        <div id="basicSection">
+            <h2>Bienvenido al Sistema</h2>
+            <p id="welcomeMessage">Cargando...</p>
+            <button id="logoutButtonBasic" class="btn-danger">Cerrar Sesión</button>
+        </div>
+
 
         <div id="protectedSection">
             <h2>Gestión de Datos (Ruta Protegida)</h2>
@@ -192,10 +210,31 @@
         const loginForm = document.getElementById('loginForm');
         const messageDiv = document.getElementById('message');
         const protectedSection = document.getElementById('protectedSection');
+        const basicSection = document.getElementById('basicSection');
         const tokenTextarea = document.getElementById('tokenTextarea');
         const fetchUsersButton = document.getElementById('fetchUsersButton');
         const usersTableBody = document.getElementById('usersTableBody');
         const logoutButton = document.getElementById('logoutButton');
+        const logoutButtonBasic = document.getElementById('logoutButtonBasic');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+
+        // Función para decodificar el PAYLOAD del JWT
+        function decodeToken(token) {
+            try {
+                // El JWT tiene el formato header.payload.signature
+                const base64Url = token.split('.')[1];
+                // Reemplaza caracteres seguros para URL y decodifica
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+
+                return JSON.parse(jsonPayload); 
+            } catch (e) {
+                console.error("Error decodificando el token:", e);
+                return { rol: null, nombre_completo: 'Usuario Desconocido' };
+            }
+        }
 
         // Función para mostrar mensajes
         function displayMessage(text, isSuccess) {
@@ -204,19 +243,45 @@
             messageDiv.style.display = 'block';
         }
 
-        // Función para alternar la vista de secciones
+        // Función para alternar la vista de secciones basada en el ROL
         function updateUI() {
+            // 1. Ocultar todo por defecto
+            loginForm.style.display = 'block';
+            protectedSection.style.display = 'none';
+            basicSection.style.display = 'none';
+            tokenTextarea.value = 'Inicie sesión para ver el token.';
+            usersTableBody.innerHTML = '<tr><td colspan="4">Inicia sesión y haz clic en \'Cargar Usuarios\'</td></tr>';
+            messageDiv.style.display = 'none'; // Limpiar mensajes al cambiar la UI
+
             if (accessToken) {
+                const payload = decodeToken(accessToken);
+                const userRole = payload.rol;
+                const userName = payload.nombre_completo || payload.correo; // Usar el nombre si existe, sino el correo.
+                
+                // 2. Ocultar el formulario de login y mostrar el botón de cerrar sesión
                 loginForm.style.display = 'none';
-                protectedSection.style.display = 'block';
-                // FIX: Mostrar el token COMPLETO en el textarea
-                tokenTextarea.value = accessToken; 
-                messageDiv.style.display = 'none';
-            } else {
-                loginForm.style.display = 'block';
-                protectedSection.style.display = 'none';
-                tokenTextarea.value = 'Inicie sesión para ver el token.';
-                usersTableBody.innerHTML = '<tr><td colspan="4">Inicia sesión y haz clic en \'Cargar Usuarios\'</td></tr>';
+
+                if (userRole === 'profesor') {
+                    // LÓGICA PARA PROFESORES (Admin)
+                    protectedSection.style.display = 'block';
+                    tokenTextarea.value = accessToken; 
+                    welcomeMessage.textContent = `¡Hola, ${userName}! (Rol: Profesor). Tienes acceso a la gestión completa del sistema.`;
+                    displayMessage(`Login exitoso. Bienvenido, ${userName}.`, true);
+                    basicSection.style.display = 'block'; // Usamos la basicSection para mostrar el saludo
+                    // Ocultamos el botón de logout de la basicSection, usamos el de protectedSection
+                    document.getElementById('logoutButtonBasic').style.display = 'none'; 
+                } else if (userRole === 'estudiante') {
+                    // LÓGICA PARA ESTUDIANTES
+                    basicSection.style.display = 'block';
+                    welcomeMessage.textContent = `¡Hola, ${userName}! (Rol: Estudiante). Estás conectado. Usa Postman para probar tus rutas personales.`;
+                    document.getElementById('logoutButtonBasic').style.display = 'inline-block';
+                } else {
+                    // Si el token no tiene un rol válido (o es inválido)
+                    displayMessage('❌ Token inválido. Por favor, inicia sesión de nuevo.', false);
+                    localStorage.removeItem('accessToken');
+                    accessToken = null;
+                    loginForm.style.display = 'block';
+                }
             }
         }
 
@@ -247,8 +312,10 @@
                 const result = await response.json();
                 accessToken = result.access_token;
                 localStorage.setItem('accessToken', accessToken);
-                displayMessage('✅ Login exitoso. Token guardado.', true);
+                
+                // Si el login es exitoso, actualizamos la UI para ver la sección correcta
                 updateUI();
+                
             } catch (error) {
                 displayMessage('❌ Error al iniciar sesión: ' + error.message, false);
             }
@@ -272,8 +339,8 @@
                 });
 
                 if (response.status === 401 || response.status === 403) {
-                    displayMessage('❌ Acceso no autorizado. El token es inválido o no tienes el rol de "profesor".', false);
-                    // Borrar token si es no autorizado
+                    displayMessage('❌ Acceso no autorizado. El token es válido, pero el servidor denegó el rol (403 Forbidden).', false);
+                    // Borrar token si es no autorizado (para evitar intentos fallidos futuros)
                     accessToken = null;
                     localStorage.removeItem('accessToken');
                     updateUI();
@@ -307,12 +374,15 @@
         // ----------------------------------------------------
         // 3. CERRAR SESIÓN
         // ----------------------------------------------------
-        logoutButton.addEventListener('click', () => {
+        const handleLogout = () => {
             accessToken = null;
             localStorage.removeItem('accessToken');
             displayMessage('🚪 Sesión cerrada correctamente.', true);
             updateUI();
-        });
+        };
+
+        logoutButton.addEventListener('click', handleLogout); // Botón de Profesor
+        logoutButtonBasic.addEventListener('click', handleLogout); // Botón de Estudiante
 
         // Inicializar la interfaz
         updateUI();

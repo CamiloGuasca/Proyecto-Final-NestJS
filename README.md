@@ -1,186 +1,138 @@
-Proyecto Final – Backend con NestJS
-Descripción General
+🚀 PROYECTO FINAL: EduTrack - Sistema de Gestión Académica (Backend NestJS)
+Este proyecto final consiste en la implementación de una API RESTful completa para un Sistema de Gestión Académica (EduTrack). El objetivo es demostrar el dominio del framework NestJS y la aplicación de buenas prácticas de desarrollo backend, incluyendo la persistencia de datos mediante TypeORM y la implementación de un sistema robusto de seguridad basado en JWT y Roles.
 
-Este proyecto corresponde al desarrollo del backend del sistema EduTrack, realizado como parte del curso de Desarrollo Backend con NestJS.
-El objetivo principal es implementar una API RESTful que gestione la información de usuarios, aplicando buenas prácticas de arquitectura, encriptación de contraseñas y validaciones.
-La aplicación está desarrollada con el framework NestJS, utilizando TypeORM para la comunicación con la base de datos PostgreSQL.
+💻 Tecnologías y Componentes Clave
+El proyecto está construido bajo la arquitectura de NestJS y utiliza los siguientes componentes principales:
 
-En esta primera fase se implementa el módulo de usuarios, con todas sus operaciones CRUD (crear, leer, actualizar y eliminar). Además, las contraseñas se almacenan de forma segura usando la librería bcrypt.
-Posteriormente se integrarán las demás entidades definidas en el proyecto (Profesor, Estudiante, Curso e Inscripción).
+Framework: NestJS (versión estable).
 
-Requisitos Previos
+Lenguaje: TypeScript.
 
-Antes de ejecutar el proyecto, es necesario tener instalado lo siguiente:
+Base de Datos: PostgreSQL.
 
-Node.js (versión recomendada: 18 o superior)
+ORM (Mapeo Objeto-Relacional): TypeORM.
 
-npm (incluido con Node.js)
+Seguridad: JSON Web Tokens (JWT), Passport Strategies y Bcrypt (para la encriptación de contraseñas).
 
-PostgreSQL (versión 14 o superior)
+Validación: DTOs con class-validator.
 
-pgAdmin4 (opcional, para gestionar la base de datos gráficamente)
+📂 Estructura del Proyecto
+El repositorio está dividido en dos partes principales, siguiendo la convención de un proyecto monolítico con frontend desacoplado:
 
-Instalación del Proyecto
+Proyecto-Final-NestJS/: Contiene todo el código fuente del Backend (NestJS).
 
-Clonar el repositorio o descargar el proyecto.
+src/auth/: Módulo de Autenticación, JWT Strategies y Guards.
 
-git clone <URL-del-repositorio>
+src/usuarios/: Gestión de las entidades Profesor y Estudiante (CRUD completo).
+
+src/cursos/: Gestión de la oferta académica.
+
+src/inscripciones/: Módulo para manejar la relación Muchos a Muchos (N:M) entre Estudiantes y Cursos.
+
+frontend/: Contiene la interfaz gráfica básica (HTML/JavaScript) para probar y consumir la API.
+
+⚙️ Requisitos Previos
+Antes de comenzar, asegúrate de tener instalados los siguientes programas y servicios:
+
+Node.js (LTS o superior).
+
+Git.
+
+Base de Datos PostgreSQL (en ejecución local o remota).
+
+Postman (o herramienta similar) para probar los endpoints.
+
+🛠️ Instalación y Configuración
+Sigue estos pasos para configurar y ejecutar la aplicación localmente:
+
+1. Clonar el Repositorio
+Bash
+
+git clone [URL_DE_TU_REPOSITORIO]
 cd Proyecto-Final-NestJS
-
-
-Instalar las dependencias.
+2. Instalar Dependencias
+Bash
 
 npm install
+3. Configurar Variables de Entorno
+Crea un archivo llamado .env en el directorio raíz del backend (Proyecto-Final-NestJS/). Este archivo contendrá las credenciales de la base de datos y la clave secreta para el JWT.
 
+Contenido del archivo .env:
 
-Configurar las variables de entorno.
+Fragmento de código
 
-En el archivo .env.template.
-Cópialo y renómbralo como .env, y actualiza los valores según tu configuración local:
-
+# Configuración de la Base de Datos
+DB_TYPE=postgres
 DB_HOST=localhost
 DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=tu_contraseña
-DB_NAME=edutrack
+DB_USERNAME=tu_usuario_postgres
+DB_PASSWORD=tu_contraseña_postgres
+DB_DATABASE=edutrack_db
 
-NOTA:SI hay variables de entorno con estos valores cambiarlos y reiniciar la computadora para que agarre los valores si no generara error....
-
-Verificar la conexión con PostgreSQL.
-Crea manualmente la base de datos en pgAdmin4 con el mismo nombre definido en DB_NAME.
-
-Ejecución del Proyecto
-
-Para ejecutar el proyecto en modo desarrollo, utiliza el siguiente comando:
+# Configuración de Seguridad JWT
+JWT_SECRET=UNA_CLAVE_SECRETA_LARGA_Y_COMPLEJA_AQUI
+JWT_EXPIRES_IN=1h
+4. Ejecutar el Servidor
+Bash
 
 npm run start:dev
+El servidor de NestJS estará disponible en http://localhost:3000.
 
+🧪 Pruebas y Uso (Autenticación y Roles)
+El sistema implementa un control de acceso basado en roles. Solo el rol profesor tiene permisos para gestionar recursos (CRUD).
 
-Si todo está correctamente configurado, en la consola aparecerá el mensaje:
+1. Cuentas de Prueba
+Utiliza estas credenciales para las pruebas de roles:
 
-[Nest] ...  - Nest application successfully started
+Profesor (Administrador de Contenido):
 
+Correo: profesor@test.com
 
-La aplicación se ejecutará por defecto en:
+Contraseña: password
 
-http://localhost:3000
+Estudiante (Usuario Básico):
 
+Correo: estudiante@test.com
 
-Endpoints Disponibles
+Contraseña: password
 
-Base URL: http://localhost:3000/usuarios
+2. Flujo de Prueba en Postman
+Para probar las rutas protegidas, primero debe obtener el token:
 
-Método	Endpoint	Descripción
-POST	/usuarios	Crear un nuevo usuario
-GET	/usuarios	Listar todos los usuarios
-GET	/usuarios/:id	Obtener un usuario por su ID
-PATCH	/usuarios/:id	Actualizar un usuario existente
-DELETE	/usuarios/:id	Eliminar un usuario por su ID
-Pruebas en Postman
+Obtener Token (Login):
 
-Para verificar el funcionamiento de la API, se recomienda usar Postman .
+Método: POST
 
-1. Crear un Usuario (POST)
+URL: http://localhost:3000/auth/login
 
-URL: http://localhost:3000/usuarios
+Resultado: Copie el valor de access_token para el siguiente paso.
 
-Body (JSON):
+Acceder a Ruta Protegida (Ejemplo):
 
-{
-  "nombre_completo": "Ian Beltrán",
-  "correo": "ianbeltran@example.com",
-  "contraseña": "12345Ian.",
-  "rol": "profesor"
-}
-
-
-Respuesta esperada:
-
-{
-  "id": 1,
-  "nombre_completo": "Ian Beltrán",
-  "correo": "ianbeltran@example.com",
-  "rol": "profesor"
-}
-
-
-Nota: la contraseña se guarda en la base de datos de forma encriptada mediante bcrypt.}
-
-
-2. Obtener Todos los Usuarios (GET)
+Método: GET
 
 URL: http://localhost:3000/usuarios
 
-Respuesta esperada:
+Cabecera: Authorization: Bearer [TOKEN_COMPLETO]
 
-[
-  {
-    "id": 1,
-    "nombre_completo": "Ian Beltrán",
-    "correo": "ianbeltran@example.com",
-    "rol": "profesor"
-  }
-]
+Prueba de Éxito (Profesor): Devolverá 200 OK con la lista de usuarios.
 
-3. Actualizar un Usuario (PATCH)
+Prueba de Falla (Estudiante): Devolverá 403 Forbidden (Demuestra el funcionamiento del RolesGuard).
 
-URL: http://localhost:3000/usuarios/1
+3. Interfaz Gráfica (Frontend)
+La carpeta frontend/index.html sirve como una demostración de la seguridad:
 
-Body (JSON):
+Si inicia sesión como Profesor, verá el Token JWT y las opciones de gestión.
 
-{
-  "nombre_completo": "Ian Alfonso Beltrán",
-  "correo": "ianbeltran@example.com",
-  "contraseña": "nuevaClave123",
-  "rol": "profesor"
-}
+Si inicia sesión como Estudiante, solo verá un mensaje de bienvenida personalizado y la sección de gestión estará oculta.
 
+🛡️ Características de Seguridad Implementadas
+Autenticación JWT: Utilización de JSON Web Tokens para manejar las sesiones de usuario de forma stateless.
 
-Validación especial:
-Si el correo ya existe, el servidor mostrará en consola:
+Bcrypt: Todas las contraseñas se encriptan con bcrypt antes de ser almacenadas en la base de datos.
 
-Error: El correo ianbeltran@example.com ya está en uso
+RolesGuard: Implementación de un Guard personalizado (@Roles('profesor')) para restringir el acceso a los endpoints sensibles (CRUD de Usuarios, Cursos, Inscripciones) únicamente al rol profesor.
+Desarrolladores
 
-
-Y Postman devolverá una respuesta:
-
-{
-  "statusCode": 400,
-  "message": "El correo ianbeltran@example.com ya está en uso"
-}
-
-4. Eliminar un Usuario (DELETE)
-
-URL: http://localhost:3000/usuarios/1
-
-Respuesta esperada:
-
-{
-  "mensaje": "Usuario con ID 1 eliminado correctamente"
-}
-
-Tecnologías Utilizadas
-
-NestJS – Framework backend basado en Node.js y TypeScript
-
-TypeORM – ORM para modelar y conectar con PostgreSQL
-
-PostgreSQL – Base de datos relacional
-
-bcrypt – Encriptación segura de contraseñas
-
-class-validator / class-transformer – Validación de datos en los DTOs
-
-Próximas Fases
-
-En las siguientes etapas del proyecto se integrarán los siguientes módulos adicionales:
-
-Profesor (especialización de usuario con campo especialidad)
-
-Estudiante (especialización con campo año_ingreso)
-
-Curso (asignado a un profesor)
-
-Inscripción (relación entre estudiantes y cursos)
-
-Estas entidades estarán relacionadas mediante decoradores de TypeORM, cumpliendo con las relaciones 1:1 y 1:N definidas en el enunciado del proyecto.
+ianjaner alfonso beltran 
+camilo andres guasca bulla

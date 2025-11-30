@@ -12,7 +12,7 @@ export class Profesor implements IProfesor{
     @Column()
     especialidad: string;
 
-    @OneToOne(() => Usuario, { onDelete: 'CASCADE' })
+    @OneToOne(() => Usuario, { onDelete: 'CASCADE'})
     @JoinColumn({ name: 'id' })
     usuario: Usuario;
 
